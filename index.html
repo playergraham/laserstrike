@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laser Strike</title>
+    <link rel="stylesheet" href="./styles.css?v=ar2" />
+  </head>
+  <body>
+    <div id="game-root">
+      <canvas id="game"></canvas>
+
+      <div id="hud" class="hud hidden">
+        <div class="hud-row top">
+          <div class="stat">
+            <span>Health</span>
+            <strong id="health">100</strong>
+          </div>
+          <div class="score">
+            <span>You</span>
+            <strong id="playerRounds">0</strong>
+            <span class="divider">:</span>
+            <strong id="aiRounds">0</strong>
+            <span>AI</span>
+          </div>
+          <div class="stat">
+            <span>Round</span>
+            <strong id="round">1</strong>
+          </div>
+          <div id="zombieRemainingStat" class="stat hidden">
+            <span>Zombies</span>
+            <strong id="zombieRemaining">25</strong>
+          </div>
+        </div>
+
+        <div id="damageFlash"></div>
+        <div id="blindFlash"></div>
+        <div id="scopeFlash"></div>
+        <div id="crosshair" aria-hidden="true"></div>
+        <div id="hitMarker">X</div>
+        <div id="damageNumber"></div>
+
+        <div class="hud-row bottom">
+          <div id="weaponBar" class="weapon-bar"></div>
+          <div id="message" class="message">Click to lock mouse. WASD move, mouse aim, left click attack.</div>
+        </div>
+      </div>
+
+      <section id="menu" class="menu">
+        <div class="menu-panel">
+          <p class="eyebrow">Laser Strike</p>
+          <h1>Choose Your Arena</h1>
+          <p class="intro">Win 5 rounds. You start on one side, the AI starts on the other. Pick one map for the match.</p>
+          <div class="map-grid">
+            <button class="map-card" data-map="outdoor">
+              <span class="map-preview outdoor"></span>
+              <strong>Solar Yard</strong>
+              <span>Outdoor lanes, low cover, long sightlines.</span>
+            </button>
+            <button class="map-card" data-map="indoor">
+              <span class="map-preview indoor"></span>
+              <strong>Neon Depot</strong>
+              <span>Indoor corners, tight rooms, quick knife fights.</span>
+            </button>
+            <button class="map-card" data-map="hybrid">
+              <span class="map-preview hybrid"></span>
+              <strong>Metro Garden</strong>
+              <span>A mixed courtyard and building layout.</span>
+            </button>
+            <button class="map-card" data-map="rooftop">
+              <span class="map-preview rooftop"></span>
+              <strong>Skyline Relay</strong>
+              <span>Rooftop pads, antenna cover, exposed bridges.</span>
+            </button>
+            <button class="map-card" data-map="canyon">
+              <span class="map-preview canyon"></span>
+              <strong>Echo Ravine</strong>
+              <span>Rock lanes, sunken routes, tall central cover.</span>
+            </button>
+            <button class="map-card" data-map="reactor">
+              <span class="map-preview reactor"></span>
+              <strong>Pulse Reactor</strong>
+              <span>Industrial chambers, glowing core, tight flanks.</span>
+            </button>
+            <button class="map-card" data-map="village">
+              <span class="map-preview village"></span>
+              <strong>Harvest Hamlet</strong>
+              <span>Enterable houses, crop rows, and open fields.</span>
+            </button>
+            <button class="map-card" data-map="city">
+              <span class="map-preview city"></span>
+              <strong>Neon Borough</strong>
+              <span>Tall buildings, apartments, homes, billboards.</span>
+            </button>
+            <button class="map-card" data-map="building">
+              <span class="map-preview building"></span>
+              <strong>Twin Atrium</strong>
+              <span>Two floors, rooms, stairs, jumpable interiors.</span>
+            </button>
+            <button class="map-card" data-map="graveyard">
+              <span class="map-preview graveyard"></span>
+              <strong>Moonlit Graves</strong>
+              <span>Gravestones, small buildings, fences, and jumpable crypts.</span>
+            </button>
+            <button class="map-card" data-map="mansion">
+              <span class="map-preview mansion"></span>
+              <strong>Grand Manor</strong>
+              <span>A huge indoor mansion with rooms, furniture, and jumpable landings.</span>
+            </button>
+            <button class="map-card" data-map="school">
+              <span class="map-preview school"></span>
+              <strong>Lockdown Academy</strong>
+              <span>An enclosed school with classrooms, halls, ceiling, and jumpable terrain.</span>
+            </button>
+            <button class="map-card" data-map="titan" data-mode="titan">
+              <span class="map-preview titan"></span>
+              <strong>Titan Siege</strong>
+              <span>First to 1, giant player, 500 health, 25 AI, huge battlefield.</span>
+            </button>
+            <button class="map-card" data-map="titan" data-mode="zombie">
+              <span class="map-preview zombie"></span>
+              <strong>Zombie Apocalypse</strong>
+              <span>Endless waves on the huge map. Knife zombies attack from all directions.</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="loadoutMenu" class="menu hidden">
+        <div class="menu-panel">
+          <p class="eyebrow">Loadout</p>
+          <h1>Choose Weapons</h1>
+          <p class="intro">Pick one from each category. The AI rolls its own random loadout for the match.</p>
+          <div id="loadoutGrid" class="loadout-grid"></div>
+          <div class="menu-actions">
+            <button id="startLoadout" class="primary-button">Start Match</button>
+            <button id="backToMaps" class="secondary-button">Back</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="matchOver" class="menu hidden">
+        <div class="menu-panel end-panel">
+          <p class="eyebrow">Match Complete</p>
+          <h1 id="matchTitle">Victory</h1>
+          <p id="matchSummary" class="intro"></p>
+          <button id="restart" class="primary-button">Play Again</button>
+        </div>
+      </section>
+
+      <section id="pauseMenu" class="menu pause-menu hidden">
+        <div class="menu-panel end-panel">
+          <p class="eyebrow">Paused</p>
+          <h1>Game Paused</h1>
+          <p class="intro">Press P to resume or H to return home.</p>
+        </div>
+      </section>
+
+      <section id="scoreMenu" class="menu pause-menu hidden">
+        <div class="menu-panel end-panel">
+          <p class="eyebrow">Scoreboard</p>
+          <h1 id="scoreTitle">Current Match</h1>
+          <p id="scoreSummary" class="intro">You 0 : 0 AI</p>
+          <div class="menu-actions">
+            <button id="continueGame" class="primary-button">Continue</button>
+            <button id="homeFromScore" class="secondary-button">Main Menu</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="./game.js?v=ar2"></script>
+  </body>
+</html>
