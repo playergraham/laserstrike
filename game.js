@@ -51,6 +51,8 @@ const zombieWaveSize = 25;
 const zombieSpeedMultiplier = 0.3;
 let audioContext = null;
 let extraAis = [];
+
+// Weapon catalog drives the loadout menu, weapon bar, and default cooldowns. Damage rules live in each attack function.
 const weaponCatalog = {
   knife: { id: "knife", category: "melee", name: "Knife", note: "50 damage", cooldown: 0.45 },
   fists: { id: "fists", category: "melee", name: "Fists", note: "25 damage, double jump", cooldown: 0.35 },
@@ -2958,6 +2960,7 @@ function getWeaponCooldown(weapon) {
 }
 
 function knifeAttack() {
+  // Knife is the high-damage melee option: risky range, but two clean hits defeat a normal AI.
   playSound("knife");
   const target = nearestFacingAi(state.gameMode === "titan" ? 9 : 4.2, 0.8);
   if (target) damageAi(50, "Knife hit: 50 damage.", target);
@@ -2965,6 +2968,7 @@ function knifeAttack() {
 }
 
 function fistsAttack() {
+  // Fists trade damage for mobility; while equipped, the player gets a double jump in updatePlayer().
   playSound("knife");
   const target = nearestFacingAi(state.gameMode === "titan" ? 8 : 4, 0.78);
   if (target) damageAi(25, "Fists hit: 25 damage.", target);
@@ -2972,6 +2976,7 @@ function fistsAttack() {
 }
 
 function sniperAttack() {
+  // Sniper rewards accuracy: body shots hit for 50, headshots instantly defeat normal-health enemies.
   playSound("sniper");
   alertAiFromNoise(0.5, 80);
   raycaster.setFromCamera({ x: 0, y: 0 }, camera);
@@ -2992,6 +2997,7 @@ function sniperAttack() {
 }
 
 function rifleAttack() {
+  // Rifle is sustained pressure: low per-shot damage, faster follow-up shots, and doubled headshot damage.
   playSound("rifle");
   alertAiFromNoise(0.38, 72);
   raycaster.setFromCamera({ x: 0, y: 0 }, camera);
@@ -3012,6 +3018,7 @@ function rifleAttack() {
 }
 
 function useMedkit() {
+  // Medkit is one use per round or wave and always restores the player's current mode max health.
   if (state.medkitUsed) {
     setMessage("Medkit already used this round.");
     return;
@@ -3023,6 +3030,7 @@ function useMedkit() {
 }
 
 function throwGrenade() {
+  // Grenade shares the utility slot's one-use flag with flashbang and deals area damage after a short fuse.
   if (state.grenadeUsed) {
     setMessage("Grenade already thrown this round.");
     return;
@@ -3044,6 +3052,7 @@ function throwGrenade() {
 }
 
 function throwFlashbang() {
+  // Flashbang also uses the one utility charge; it blinds enemies, and a player-hit flash fully whites out the screen.
   if (state.grenadeUsed) {
     setMessage("Flashbang already thrown this round.");
     return;
