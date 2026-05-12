@@ -2952,6 +2952,7 @@ function useWeapon() {
 }
 
 function getWeaponCooldown(weapon) {
+  // Slows the assault rifle in standard matches so camping AI has counterplay and sniper/utility choices still matter.
   if (weapon.id === "rifle" && !["titan", "zombie"].includes(state.gameMode)) return 0.2;
   return weapon.cooldown;
 }
